@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شات الجزائري الذكي</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root {
+            --primary-color: #10a37f;
+            --text-color: #333;
+            --bg-color: #f5f5f5;
+            --chat-bg: #fff;
+            --user-bubble: #e3f2fd;
+            --bot-bubble: #f1f1f1;
+            --dark-primary: #0d8a6d;
+            --dark-text: #f0f0f0;
+            --dark-bg: #1a1a1a;
+            --dark-chat-bg: #252525;
+            --dark-user-bubble: #2d3a4b;
+            --dark-bot-bubble: #3a3a3a;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        body.dark-mode header {
+            background-color: var(--dark-primary);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            width: 30px;
+            height: 30px;
+            margin-left: 10px;
+        }
+
+        .settings {
+            display: flex;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            margin-left: 15px;
+        }
+
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: var(--chat-bg);
+        }
+
+        body.dark-mode .chat-container {
+            background-color: var(--dark-chat-bg);
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-message {
+            align-items: flex-end;
+        }
+
+        .bot-message {
+            align-items: flex-start;
+        }
+
+        .bubble {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            margin-bottom: 5px;
+            position: relative;
+            word-wrap: break-word;
+            line-height: 1.5;
+        }
+
+        .user-bubble {
+            background-color: var(--user-bubble);
+            color: var(--text-color);
+            border-top-right-radius: 5px;
+        }
+
+        body.dark-mode .user-bubble {
+            background-color: var(--dark-user-bubble);
+            color: var(--dark-text);
+        }
+
+        .bot-bubble {
+            background-color: var(--bot-bubble);
+            color: var(--text-color);
+            border-top-left-radius: 5px;
+        }
+
+        body.dark-mode .bot-bubble {
+            background-color: var(--dark-bot-bubble);
+            color: var(--dark-text);
+        }
+
+        .typing-indicator {
+            display: flex;
+            padding: 12px 16px;
+            background-color: var(--bot-bubble);
+            border-radius: 18px;
+            border-top-left-radius: 5px;
+            width: fit-content;
+        }
+
+        body.dark-mode .typing-indicator {
+            background-color: var(--dark-bot-bubble);
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #666;
+            border-radius: 50%;
+            margin: 0 3px;
+            animation: typingAnimation 1.4s infinite ease-in-out;
+        }
+
+        body.dark-mode .typing-dot {
+            background-color: #aaa;
+        }
+
+        .typing-dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingAnimation {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
+
+        .input-area {
+            display: flex;
+            padding: 15px;
+            background-color: var(--chat-bg);
+            border-top: 1px solid #ddd;
+        }
+
+        body.dark-mode .input-area {
+            background-color: var(--dark-chat-bg);
+            border-top: 1px solid #444;
+        }
+
+        #user-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            outline: none;
+            font-size: 16px;
+            background-color: var(--chat-bg);
+            color: var(--text-color);
+        }
+
+        body.dark-mode #user-input {
+            background-color: var(--dark-chat-bg);
+            color: var(--dark-text);
+            border-color: #444;
+        }
+
+        #send-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            margin-right: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+
+        #send-button:hover {
+            background-color: var(--dark-primary);
+        }
+
+        .timestamp {
+            font-size: 12px;
+            color: #888;
+            margin-top: 3px;
+        }
+
+        body.dark-mode .timestamp {
+            color: #aaa;
+        }
+
+        .vibrate {
+            animation: vibrate 0.3s linear;
+        }
+
+        @keyframes vibrate {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <!-- شعار التطبيق - ضعه في assets/images/logo.png -->
+                <img src="assets/images/logo.png" alt="شات الجزائري الذكي">
+                <h1>شات الجزائري الذكي</h1>
+            </div>
+            <div class="settings">
+                <button class="theme-toggle" id="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="chat-container" id="chat-container">
+            <!-- الرسائل تظهر هنا -->
+        </div>
+
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="اكتب رسالتك هنا..." autocomplete="off">
+            <button id="send-button">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- أصوات التطبيق - ضعها في مجلد assets/sounds/ -->
+    <audio id="send-sound" src="assets/sounds/send.mp3" preload="auto"></audio>
+    <audio id="receive-sound" src="assets/sounds/receive.mp3" preload="auto"></audio>
+    <audio id="typing-sound" src="assets/sounds/typing.mp3" preload="auto"></audio>
+
+    <!-- تكامل DeepSeek AI -->
+    <script src="assets/js/deepseek.js"></script>
+    
+    <script>
+        // الذاكرة للمحادثة
+        let conversationMemory = [];
+        
+        // عناصر DOM
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        const themeToggle = document.getElementById('theme-toggle');
+        const sendSound = document.getElementById('send-sound');
+        const receiveSound = document.getElementById('receive-sound');
+        const typingSound = document.getElementById('typing-sound');
+        const body = document.body;
+
+        // تحميل الوضع من localStorage
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            body.classList.add('dark-mode');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+
+        // تبديل الوضع المظلم
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            if (body.classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', 'enabled');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                localStorage.setItem('darkMode', 'disabled');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        });
+
+        // إرسال الرسالة عند الضغط على Enter
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // إرسال الرسالة عند النقر على الزر
+        sendButton.addEventListener('click', sendMessage);
+
+        // رسالة ترحيبية
+        setTimeout(() => {
+            addBotMessage("على كيف كيفك، شنو ما عندك؟ 😏");
+        }, 1000);
+
+        // وظيفة إرسال الرسالة
+        function sendMessage() {
+            const message = userInput.value.trim();
+            if (message === '') return;
+
+            addUserMessage(message);
+            userInput.value = '';
+            
+            // تشغيل صوت الإرسال
+            sendSound.play();
+            
+            // عرض مؤشر الكتابة
+            showTypingIndicator();
+            
+            // تشغيل صوت الكتابة
+            typingSound.play();
+            
+            // تأخير الرد لمحاكاة الكتابة
+            setTimeout(() => {
+                removeTypingIndicator();
+                getBotResponse(message);
+            }, 1500 + Math.random() * 2000);
+        }
+
+        // الحصول على رد من DeepSeek AI
+        async function getBotResponse(userMessage) {
+            try {
+                const response = await getDeepSeekResponse(userMessage, conversationMemory);
+                addBotResponse(response);
+            } catch (error) {
+                console.error("Error getting bot response:", error);
+                addBotResponse("يا أخي، السيرفر تعبان اليوم، جرب مرة أخرى بعد شوية 😑");
+            }
+        }
+
+        // إضافة رد البوت
+        function addBotResponse(response) {
+            // تحويل الرد إلى لهجة جزائرية
+            const algerianResponse = convertToAlgerianTone(response);
+            addBotMessage(algerianResponse);
+            
+            // اهتزاز
+            chatContainer.classList.add('vibrate');
+            setTimeout(() => {
+                chatContainer.classList.remove('vibrate');
+            }, 300);
+            
+            // تشغيل صوت الاستلام
+            receiveSound.play();
+        }
+
+        // إضافة رسالة المستخدم
+        function addUserMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message user-message';
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble user-bubble';
+            bubble.textContent = message;
+            
+            const timestamp = document.createElement('div');
+            timestamp.className = 'timestamp';
+            timestamp.textContent = getCurrentTime();
+            
+            messageDiv.appendChild(bubble);
+            messageDiv.appendChild(timestamp);
+            chatContainer.appendChild(messageDiv);
+            
+            // إضافة إلى الذاكرة
+            conversationMemory.push({ role: 'user', content: message });
+            
+            // التمرير إلى الأسفل
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // إضافة رسالة البوت
+        function addBotMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message bot-message';
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble bot-bubble';
+            bubble.textContent = message;
+            
+            const timestamp = document.createElement('div');
+            timestamp.className = 'timestamp';
+            timestamp.textContent = getCurrentTime();
+            
+            messageDiv.appendChild(bubble);
+            messageDiv.appendChild(timestamp);
+            chatContainer.appendChild(messageDiv);
+            
+            // إضافة إلى الذاكرة
+            conversationMemory.push({ role: 'bot', content: message });
+            
+            // التمرير إلى الأسفل
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // عرض مؤشر الكتابة
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message bot-message';
+            typingDiv.id = 'typing-indicator';
+            
+            const typingBubble = document.createElement('div');
+            typingBubble.className = 'typing-indicator';
+            
+            for (let i = 0; i < 3; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'typing-dot';
+                typingBubble.appendChild(dot);
+            }
+            
+            typingDiv.appendChild(typingBubble);
+            chatContainer.appendChild(typingDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // إزالة مؤشر الكتابة
+        function removeTypingIndicator() {
+            const typingIndicator = document.getElementById('typing-indicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
+        // تحويل النص إلى لهجة جزائرية
+        function convertToAlgerianTone(text) {
+            // تحقق من وجود كلمات إنجليزية
+            if (/[a-zA-Z]/.test(text)) {
+                return "اهدر بالعربية ولا قود 😑";
+            }
+            
+            // تحويل بعض الكلمات إلى لهجة جزائرية
+            const replacements = {
+                "نعم": "آه",
+                "لا": "لا والله",
+                "أنا": "أنايا",
+                "لكن": "بصح",
+                "جيد": "مزيان",
+                "حسنا": "آه يا زعيم",
+                "أهلا": "آهلا بيك",
+                "شكرا": "الله يخليك",
+                "لا أعرف": "منيش عارف 😑",
+                "مرحبا": "آهلا وسهلا",
+                "صباح الخير": "صباح النور",
+                "مساء الخير": "مساء النور"
+            };
+
+            for (const [standard, algerian] of Object.entries(replacements)) {
+                text = text.replace(new RegExp(standard, "g"), algerian);
+            }
+
+            return text;
+        }
+
+        // الحصول على الوقت الحالي
+        function getCurrentTime() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const ampm = hours >= 12 ? 'م' : 'ص';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // الساعة 0 تصبح 12
+            return `${hours}:${minutes} ${ampm}`;
+        }
+    </script>
+</body>
+</html>

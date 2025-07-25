@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شات الجزائري الذكي - تحميل</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        
+        .loading-container {
+            text-align: center;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+        
+        .logo {
+            width: 150px;
+            height: 150px;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+        
+        .app-name {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .version {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .loading-text {
+            font-size: 18px;
+            color: #444;
+            margin-bottom: 30px;
+        }
+        
+        .developer {
+            font-size: 12px;
+            color: #888;
+            margin-top: 40px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-container">
+        <!-- ضع شعارك في مجلد assets/images/logo.png -->
+        <img src="assets/images/logo.png" alt="شات الجزائري الذكي" class="logo">
+        <div class="app-name">شات الجزائري الذكي</div>
+        <div class="version">الإصدار الأول</div>
+        <div class="loading-text">جاري التحميل...</div>
+        <div class="developer">تم تطويره بواسطة Waled Rouibah 2025</div>
+    </div>
+
+    <script>
+        // الانتقال إلى واجهة المحادثة بعد 3 ثوان
+        setTimeout(() => {
+            window.location.href = "chat.html";
+        }, 3000);
+    </script>
+</body>
+</html>
